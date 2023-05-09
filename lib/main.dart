@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:api_local_db/apiProvider/api_provider.dart';
+import 'package:api_local_db/cart_screen.dart';
 import 'package:api_local_db/core/url.dart';
 import 'package:api_local_db/db/db_helper.dart';
 import 'package:api_local_db/model/product_model.dart';
@@ -125,6 +126,16 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CartScreen()));
+              },
+              icon: const Icon(Icons.shopping_cart_outlined))
+        ],
         backgroundColor: Colors.deepPurpleAccent,
         /*elevation: 0,*/
       ),
@@ -164,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 CachedNetworkImage(
                                   height: 100,
                                   width: 100,
-                                  imageUrl: snapshot.data![position].row[4],
+                                  imageUrl: item.row[4],
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -174,27 +185,27 @@ class _MyHomePageState extends State<MyHomePage> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
-                                        snapshot.data![position].row[1],
+                                        item.row[1],
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      Text(snapshot.data![position].row[3]),
+                                      Text(item.row[3]),
                                       const SizedBox(
                                         height: 10,
                                       ),
                                       Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          snapshot.data![position].row[2],
+                                          item.row[2],
                                           textAlign: TextAlign.start,
                                         ),
                                       ),
                                       ElevatedButton(
                                           onPressed: () {},
-                                          child: const Text('Save Data')),
+                                          child: const Text('Add To Cart')),
                                     ],
                                   ),
                                 ),
