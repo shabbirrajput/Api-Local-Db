@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:api_local_db/apiProvider/api_provider.dart';
-import 'package:api_local_db/cart_screen.dart';
 import 'package:api_local_db/db/db_helper.dart';
 import 'package:api_local_db/model/product_model.dart';
 import 'package:flutter/material.dart';
@@ -35,11 +34,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<ProductModel> mProductModel = [];
-  var dbHelper;
+  late DbHelper dbHelper;
 
   @override
   void initState() {
     initData();
+
     dbHelper = DbHelper();
     super.initState();
   }
@@ -49,23 +49,29 @@ class _MyHomePageState extends State<MyHomePage> {
         .getMethod('https://fakestoreapi.com/products/category/electronics');
     mProductModel = List<ProductModel>.from(
         jsonDecode(response).map((model) => ProductModel.fromJson(model)));
-    setState(() {});
+
+    for (int i = 0; i < mProductModel.length; i++) {
+      saveApiData(i);
+    }
+    setState(() {
+      print('Length ---------> ${mProductModel.length}');
+    });
   }
 
-  void saveApiData() async {
-    ProductModel pModel = ProductModel();
+  void saveApiData(int index) async {
+    ProductModel pModel = mProductModel[index];
 
-    pModel.title;
-    pModel.description;
-    pModel.image;
-    pModel.price;
     dbHelper = DbHelper();
     await dbHelper.saveData(pModel).then((productData) {
       print("Successfully Saved");
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const CartScreen()));
+
+/*      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const CartScreen()));*/
     }).catchError((error) {
       print("Error: Data Save Fail--$error");
+    });
+    setState(() {
+      print("Model Item--------------> ${pModel.image}");
     });
   }
 
@@ -123,9 +129,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              saveApiData();
+                              // saveApiData();
                             },
-                            child: const Text('Add To Cart')),
+                            child: const Text('Save Data')),
                       ],
                     ),
                   ),

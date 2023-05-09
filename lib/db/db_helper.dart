@@ -7,15 +7,17 @@ import 'dart:io' as io;
 class DbHelper {
   late Database _db;
 
-  static const String dbName = 'Product.db';
+  static const String dbName = 'product.db';
   static const String tableProduct = 'Product';
-  static const int version = 1;
+  static const int version = 6;
 
   static const String productId = 'id';
   static const String title = 'title';
   static const String price = 'price';
   static const String description = 'description';
   static const String image = 'image';
+  static const String category = 'category';
+  static const String rating = 'rating';
   static const String cartProductID = 'cartProductID';
   static const String tableCart = 'tableCart';
 
@@ -32,6 +34,7 @@ class DbHelper {
   }
 
   _onCreate(Database db, int intVersion) async {
+    ///Product Table
     await db.execute("CREATE TABLE $tableProduct ("
         "$productId INTEGER PRIMARY KEY,"
         "$title TEXT,"
@@ -40,13 +43,14 @@ class DbHelper {
         "$image TEXT"
         ")");
 
-    await db.execute("CREATE TABLE $tableCart ("
+    ///Cart Table
+/*    await db.execute("CREATE TABLE $tableCart ("
         " $cartProductID INTEGER PRIMARY KEY,"
         "$title TEXT,"
         "$price TEXT,"
         "$description TEXT,"
         "$image TEXT"
-        ")");
+        ")");*/
   }
 
   ///Insert Data
@@ -57,14 +61,14 @@ class DbHelper {
   }
 
   ///GetCartData
-  Future<ProductModel> getCartProduct(int productId) async {
+/*  Future<ProductModel> getCartProduct(int productId) async {
     var dbClient = await db;
     var res = await dbClient.rawQuery("SELECT * FROM $tableCart WHERE "
         "$cartProductID = $productId ");
 
-/*    if (res.isNotEmpty) {
+*/ /*    if (res.isNotEmpty) {
       return CartModel.fromJson(res.first);
-    }*/
+    }*/ /*
     return ProductModel();
-  }
+  }*/
 }

@@ -1,4 +1,3 @@
-import 'package:api_local_db/db/db_helper.dart';
 import 'package:api_local_db/model/product_model.dart';
 import 'package:flutter/material.dart';
 
@@ -12,10 +11,11 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   var dbHelper;
   ProductModel mCartModel = ProductModel();
-  void initData() async {
+/*  void initData() async {
     dbHelper = DbHelper();
     await dbHelper
-        .getCartProduct(widget.mProductModel.productId)
+        .getCartProduct(
+        widget.mProductModel.productId)
         .then((cartData) {
       if (cartData != null && cartData.cartId != null) {
         setState(() {
@@ -27,8 +27,7 @@ class _CartScreenState extends State<CartScreen> {
         });
       }
     });
-  }
-
+  }*/
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
