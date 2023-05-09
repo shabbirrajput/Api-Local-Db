@@ -39,7 +39,8 @@ dependencies:
   shared_preferences: ^2.1.0
   path_provider: ^2.0.14
   sqflite: ^2.2.8+1
-  dio: ^5.1.1
+  connectivity_plus: ^3.0.6
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:

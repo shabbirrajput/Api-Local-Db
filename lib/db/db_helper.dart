@@ -60,6 +60,24 @@ class DbHelper {
     return res;
   }
 
+  ///Get Data Offline
+/*  Future<ProductModel> getDataOffline(ProductModel products) async {
+    var dbClient = await db;
+    var res = await dbClient.rawQuery('''SELECT * FROM $products''');
+
+    if (res.isNotEmpty) {
+      return ProductModel.fromJson(res.first);
+    }
+    return ProductModel();
+  }*/
+
+  Future<List> getAllRecords() async {
+    var dbClient = await db;
+    var result = await dbClient.rawQuery("SELECT * FROM $tableProduct");
+
+    return result.toList();
+  }
+
   ///GetCartData
 /*  Future<ProductModel> getCartProduct(int productId) async {
     var dbClient = await db;
