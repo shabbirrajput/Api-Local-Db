@@ -1,4 +1,5 @@
-import 'package:fake_store/auth/sign_in.dart';
+import 'package:api_local_db/auth/sign_in.dart';
+import 'package:api_local_db/core/app_string.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,7 +26,7 @@ class _SignUpState extends State<SignUp> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
-        title: const Text('Sign Up'),
+        title: const Text(AppString.textSignUp),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -35,7 +36,7 @@ class _SignUpState extends State<SignUp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Text(
-                  'Sign-Up',
+                  AppString.textSignUp,
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 30,
@@ -51,7 +52,7 @@ class _SignUpState extends State<SignUp> {
                   filled: true,
                   fillColor: Colors.white38,
                   border: InputBorder.none,
-                  hintText: 'Enter full name',
+                  hintText: AppString.textEnterFullName,
                   hintStyle: TextStyle(color: Colors.grey)),
             ),
             const SizedBox(
@@ -64,7 +65,7 @@ class _SignUpState extends State<SignUp> {
                   filled: true,
                   fillColor: Colors.white38,
                   border: InputBorder.none,
-                  hintText: 'Enter Email',
+                  hintText: AppString.textEnterEmail,
                   hintStyle: TextStyle(color: Colors.grey)),
             ),
             const SizedBox(
@@ -78,7 +79,7 @@ class _SignUpState extends State<SignUp> {
                   filled: true,
                   fillColor: Colors.white38,
                   border: InputBorder.none,
-                  hintText: 'Enter Password',
+                  hintText: AppString.textEnterPassword,
                   hintStyle: TextStyle(color: Colors.grey)),
             ),
             const SizedBox(
@@ -100,7 +101,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 child: const Text(
-                  'Sign-Up',
+                  AppString.textSignUp,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),

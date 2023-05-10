@@ -1,7 +1,10 @@
 import 'dart:convert';
 
-import 'package:fake_store/core/app_config.dart';
-import 'package:fake_store/model/user_model.dart';
+import 'package:api_local_db/core/app_config.dart';
+import 'package:api_local_db/core/app_string.dart';
+import 'package:api_local_db/core/app_url.dart';
+import 'package:api_local_db/model/user_model.dart';
+import 'package:api_local_db/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +24,7 @@ class _SignInState extends State<SignIn> {
 
   void login(String email, password) async {
     try {
-      Response response = await post(Uri.parse('https://reqres.in/api/login'),
+      Response response = await post(Uri.parse(UrlProvider.apiLoginUrl),
           body: {'email': email, 'password': password});
 
       if (response.statusCode == 200) {
@@ -70,7 +73,7 @@ class _SignInState extends State<SignIn> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
-        title: const Text('Sign In'),
+        title: const Text(AppString.textSignIn),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -80,7 +83,7 @@ class _SignInState extends State<SignIn> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Text(
-                  'Log-In',
+                  AppString.textLogIn,
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 30,
@@ -88,6 +91,9 @@ class _SignInState extends State<SignIn> {
                       fontStyle: FontStyle.normal),
                 ),
               ],
+            ),
+            const SizedBox(
+              height: 15,
             ),
             Container(
               decoration: BoxDecoration(
@@ -100,23 +106,28 @@ class _SignInState extends State<SignIn> {
                 style: const TextStyle(color: Colors.black),
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: 'Enter Email',
+                    hintText: AppString.textEnterEmail,
                     hintStyle: TextStyle(color: Colors.grey)),
               ),
             ),
             const SizedBox(
               height: 15,
             ),
-            TextFormField(
-              obscureText: true,
-              controller: passwordController,
-              style: const TextStyle(color: Colors.black),
-              decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white38,
-                  border: InputBorder.none,
-                  hintText: 'Enter Password',
-                  hintStyle: TextStyle(color: Colors.grey)),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(5.0))),
+              child: TextFormField(
+                obscureText: true,
+                controller: passwordController,
+                style: const TextStyle(color: Colors.black),
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: AppString.textEnterPassword,
+                    hintStyle: TextStyle(color: Colors.grey)),
+              ),
             ),
             const SizedBox(
               height: 15,
@@ -129,13 +140,12 @@ class _SignInState extends State<SignIn> {
                   getEmail();
                   getPassword();
 
-                  /*login(emailController.text.toString(),
-                      passwordController.text.toString());*/
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) =>
-                  //             const MyHomePage(title: 'Fake Store')));
+                  login(emailController.text.toString(),
+                      passwordController.text.toString());
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomeScreen()));
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.resolveWith<Color?>(
@@ -143,7 +153,7 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
                 child: const Text(
-                  'Sign-In',
+                  AppString.textSignIn,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),

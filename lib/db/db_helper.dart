@@ -1,3 +1,4 @@
+import 'package:api_local_db/model/cart_model.dart';
 import 'package:api_local_db/model/product_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +12,7 @@ class DbHelper {
   static const String tableProduct = 'Product';
   static const int version = 6;
 
+  ///Product Table
   static const String productId = 'id';
   static const String title = 'title';
   static const String price = 'price';
@@ -18,14 +20,20 @@ class DbHelper {
   static const String image = 'image';
   static const String category = 'category';
   static const String rating = 'rating';
+
+  ///Cart Table
+  static const String tableCart = 'Cart';
+  static const String cartId = 'cartId';
   static const String cartProductID = 'cartProductID';
-  static const String tableCart = 'tableCart';
+  static const String cartProductQty = 'cartProductQty';
+  static const String cartUserId = 'cartUserId';
 
   Future<Database> get db async {
     _db = await initDb();
     return _db;
   }
 
+  ///Database Creation
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, dbName);
@@ -44,33 +52,29 @@ class DbHelper {
         ")");
 
     ///Cart Table
-/*    await db.execute("CREATE TABLE $tableCart ("
-        " $cartProductID INTEGER PRIMARY KEY,"
-        "$title TEXT,"
-        "$price TEXT,"
-        "$description TEXT,"
-        "$image TEXT"
-        ")");*/
+    await db.execute("CREATE TABLE $tableCart ("
+        " $cartId INTEGER PRIMARY KEY,"
+        "$cartProductID INTEGER,"
+        "$cartProductQty INTEGER,"
+        "$cartUserId INTEGER"
+        ")");
   }
 
-  ///Insert Data
+  ///Create Product Table
   Future<int> saveData(ProductModel product) async {
     var dbClient = await db;
     var res = await dbClient.insert(tableProduct, product.toJson());
     return res;
   }
 
-  ///Get Data Offline
-/*  Future<ProductModel> getDataOffline(ProductModel products) async {
+  ///Create Cart Table
+  Future<int> saveCartData(CartModel cart) async {
     var dbClient = await db;
-    var res = await dbClient.rawQuery('''SELECT * FROM $products''');
+    var res = await dbClient.insert(tableCart, cart.toJson());
+    return res;
+  }
 
-    if (res.isNotEmpty) {
-      return ProductModel.fromJson(res.first);
-    }
-    return ProductModel();
-  }*/
-
+  ///Get Data From Products Table
   Future<List> getAllRecords() async {
     var dbClient = await db;
     var result = await dbClient.rawQuery("SELECT * FROM $tableProduct");
@@ -78,7 +82,44 @@ class DbHelper {
     return result.toList();
   }
 
-  ///GetCartData
+  ///Get Data From Cart Table
+  Future<CartModel> getCartProduct(int productId, int userId) async {
+    var dbClient = await db;
+    var res = await dbClient.rawQuery("SELECT * FROM $tableCart WHERE "
+        "$cartProductID = $productId AND "
+        "$cartUserId = $userId");
+
+    if (res.isNotEmpty) {
+      return CartModel.fromJson(res.first);
+    }
+    return CartModel();
+  }
+
+  ///Join Query
+  Future<List<CartModel>> getUserCart(int userId) async {
+    var dbClient = await db;
+    var res = await dbClient.rawQuery(
+        "SELECT * FROM $tableCart INNER JOIN $tableProduct on $tableProduct.$productId=$tableCart.$cartProductID WHERE $cartUserId = $userId");
+
+    try {
+      List<CartModel> mCartModel =
+          List<CartModel>.from(res.map((model) => CartModel.fromJson(model)));
+
+      return mCartModel;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List> getAllCartRecords(int userId) async {
+    int userId = 5;
+    var dbClient = await db;
+    var result = await dbClient
+        .rawQuery("SELECT * FROM $tableProduct WHERE $productId=$userId");
+
+    return result.toList();
+  }
+
 /*  Future<ProductModel> getCartProduct(int productId) async {
     var dbClient = await db;
     var res = await dbClient.rawQuery("SELECT * FROM $tableCart WHERE "

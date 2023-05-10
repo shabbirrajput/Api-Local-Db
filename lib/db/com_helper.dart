@@ -1,7 +1,7 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
+import 'package:api_local_db/db/navigator_key.dart';
 import 'package:flutter/material.dart';
-import 'package:sqlite_practice/db/navigator_key.dart';
 
 alertDialog(String msg) {
   //Toast.show(msg, context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
