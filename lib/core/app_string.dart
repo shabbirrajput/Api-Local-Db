@@ -8,6 +8,7 @@ class AppString {
   static const textEnterFullName = 'Enter full name';
   static const textCheckout = 'Checkout';
   static const textAddToCart = 'Add To Cart';
+  static const textSelectQty = 'Select Qty';
   static const textNoInternetConnectionAvailable =
       'No Internet Connection Available';
 }

@@ -52,12 +52,12 @@ class DbHelper {
         ")");
 
     ///Cart Table
-    await db.execute("CREATE TABLE $tableCart ("
+/*    await db.execute("CREATE TABLE $tableCart ("
         " $cartId INTEGER PRIMARY KEY,"
         "$cartProductID INTEGER,"
         "$cartProductQty INTEGER,"
         "$cartUserId INTEGER"
-        ")");
+        ")");*/
   }
 
   ///Create Product Table
@@ -67,12 +67,34 @@ class DbHelper {
     return res;
   }
 
+  ///GetUSerProduct
+  Future<List<ProductModel>> getUserProduct(int userId) async {
+    var dbClient = await db;
+    var res = await dbClient.rawQuery("SELECT * FROM $tableProduct WHERE "
+        "$productId = $userId ");
+    try {
+      List<ProductModel> mProductModel = List<ProductModel>.from(
+          res.map((model) => ProductModel.fromJson(model)));
+
+      return mProductModel;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  ///ToMap
+/*  Future<int> addProduct(ModelProduct product) async {
+    final dbClient = await db;
+    var res = await dbClient.insert('products', product.toMap());
+    return res;
+  }*/
+
   ///Create Cart Table
-  Future<int> saveCartData(CartModel cart) async {
+/*  Future<int> saveCartData(CartModel cart) async {
     var dbClient = await db;
     var res = await dbClient.insert(tableCart, cart.toJson());
     return res;
-  }
+  }*/
 
   ///Get Data From Products Table
   Future<List> getAllRecords() async {
@@ -82,7 +104,27 @@ class DbHelper {
     return result.toList();
   }
 
+  ///GetCartData
+  Future<CartModel> getCartProduct(int productId) async {
+    var dbClient = await db;
+    var res = await dbClient.rawQuery("SELECT * FROM $tableProduct WHERE "
+        "$cartProductID = $productId ");
+
+    if (res.isNotEmpty) {
+      return CartModel.fromJson(res.first);
+    }
+    return CartModel();
+  }
+
+  ///Save Cart Data
+  Future<int> saveCartData(CartModel cart) async {
+    var dbClient = await db;
+    var res = await dbClient.insert(tableCart, cart.toJson());
+    return res;
+  }
+
   ///Get Data From Cart Table
+/*
   Future<CartModel> getCartProduct(int productId, int userId) async {
     var dbClient = await db;
     var res = await dbClient.rawQuery("SELECT * FROM $tableCart WHERE "
@@ -94,9 +136,10 @@ class DbHelper {
     }
     return CartModel();
   }
+*/
 
   ///Join Query
-  Future<List<CartModel>> getUserCart(int userId) async {
+/*  Future<List<CartModel>> getUserCart(int userId) async {
     var dbClient = await db;
     var res = await dbClient.rawQuery(
         "SELECT * FROM $tableCart INNER JOIN $tableProduct on $tableProduct.$productId=$tableCart.$cartProductID WHERE $cartUserId = $userId");
@@ -109,7 +152,7 @@ class DbHelper {
     } catch (e) {
       return [];
     }
-  }
+  }*/
 
   Future<List> getAllCartRecords(int userId) async {
     int userId = 5;

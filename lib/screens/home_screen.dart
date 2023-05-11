@@ -10,9 +10,11 @@ import 'package:api_local_db/screens/cart_screen.dart';
 import 'package:api_local_db/core/app_url.dart';
 import 'package:api_local_db/db/db_helper.dart';
 import 'package:api_local_db/model/product_model.dart';
+import 'package:api_local_db/screens/product_detais.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -35,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     initData();
+    initCartData();
     // initNewData();
     internetconnection = Connectivity()
         .onConnectivityChanged
@@ -100,6 +103,36 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
+  ///
+  void postCart() async {
+    Response response = await post(Uri.parse(UrlProvider.apiCartUrl), body: {
+      'cartUserId': 1.toString(),
+    });
+    print(response.body);
+    setState(() {});
+  }
+
+  /// INIT new cart Data
+/*  void initCartData() async {
+    dbHelper = DbHelper();
+    await dbHelper.getCartProduct().then((cartData) {
+      if (cartData != null && cartData.cartId != null) {
+        setState(() {
+          mCartModel = cartData;
+        });
+      } else {
+        setState(() {
+          mCartModel = CartModel();
+        });
+      }
+    });
+  }*/
+  void initCartData() async {
+    dbHelper = DbHelper();
+    mProductModel = await dbHelper.getUserProduct(5);
+    setState(() {});
+  }
+
   int selectQty = 0;
 
   @override
@@ -110,10 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.push(
+                /*Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const CartScreen()));
+                        builder: (context) => const CartScreen(mProductModel: item,)));*/
               },
               icon: const Icon(Icons.shopping_cart_outlined))
         ],
@@ -123,8 +156,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: FutureBuilder<List>(
         future: dbHelper.getAllRecords(),
         initialData: const [],
-        builder: (context, snapshot) {
-          return snapshot.hasData
+        builder: (context, index) {
+          return index.hasData
               ? SingleChildScrollView(
                   physics: const ScrollPhysics(),
                   child: Column(
@@ -138,9 +171,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (_, int position) {
-                          final item = snapshot.data![position];
+                        itemCount: mProductModel.length,
+                        itemBuilder: (BuildContext ctx, int index) {
+                          final ProductModel item = mProductModel[index];
                           //get your item data here ...
                           return Container(
                             margin: const EdgeInsets.all(AppSize.mainSize10),
@@ -154,10 +187,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Radius.circular(AppSize.mainSize20))),
                             child: Row(
                               children: [
-                                CachedNetworkImage(
-                                  height: AppSize.mainSize100,
-                                  width: AppSize.mainSize100,
-                                  imageUrl: item.row[4],
+                                InkWell(
+                                  onTap: () {},
+                                  child: CachedNetworkImage(
+                                    height: AppSize.mainSize100,
+                                    width: AppSize.mainSize100,
+                                    imageUrl: item.image!,
+                                  ),
                                 ),
                                 const SizedBox(
                                   width: AppSize.mainSize10,
@@ -167,27 +203,42 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
-                                        item.row[1],
+                                        item.title!,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(
                                         height: AppSize.mainSize10,
                                       ),
-                                      Text(item.row[3]),
+                                      Text(item.description!),
                                       const SizedBox(
                                         height: AppSize.mainSize10,
                                       ),
                                       Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          item.row[2],
+                                          item.price!.toString(),
                                           textAlign: TextAlign.start,
                                         ),
                                       ),
                                       ElevatedButton(
                                           onPressed: () {
                                             initData();
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CartScreen(
+                                                  mProductModel: item,
+                                                ),
+                                              ),
+                                            );
+
+                                            /*ModelProduct product = ModelProduct(
+                                                title: 'Product name',
+                                                price: 9.99);
+                                            await dbHelper.addProduct(product);
+                                            // show success message or navigate to cart screen*/
                                           },
                                           child: const Text(
                                               AppString.textAddToCart)),

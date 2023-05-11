@@ -6,10 +6,12 @@ import 'package:api_local_db/core/app_string.dart';
 import 'package:api_local_db/core/app_url.dart';
 import 'package:api_local_db/db/db_helper.dart';
 import 'package:api_local_db/model/cart_model.dart';
+import 'package:api_local_db/model/product_model.dart';
 import 'package:flutter/material.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  final ProductModel mProductModel;
+  const CartScreen({Key? key, required this.mProductModel}) : super(key: key);
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -114,7 +116,7 @@ class _CartScreenState extends State<CartScreen> {
               child: ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: 5 /*mCartModel.length*/,
+                itemCount: 1,
                 itemBuilder: (context, index) {
                   /*
                   CartModel item = mCartModel[index];*/
@@ -131,32 +133,31 @@ class _CartScreenState extends State<CartScreen> {
                     child: Row(
                       children: [
                         Image.network(
-                          height: AppSize.mainSize100,
-                          width: AppSize.mainSize100,
-                          'https://blogger.googleusercontent.com/img/a/AVvXsEj3QuTZS9GDUmW8x5PIhoBEBFGwOoq_B_N6DqaqA46m3458WZti_XpROAMuZtX4Dm772GtZ6-Y3-9jZSgqgwdmURlNLP0PMSynGpQ3uGfvz-zrEbXF2KYd4TQsMhqd-QM807v1A1gSx8Rr8tqYF7AJD297pGjEc5m3yoM60d-CDd9fMIbX-ooBccIXMAQ',
-                        ),
+                            height: AppSize.mainSize100,
+                            width: AppSize.mainSize100,
+                            widget.mProductModel.image!),
                         const SizedBox(
                           width: AppSize.mainSize10,
                         ),
                         Expanded(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                'Title',
+                                widget.mProductModel.title!,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               SizedBox(
                                 height: AppSize.mainSize10,
                               ),
-                              Text('Description'),
+                              Text(widget.mProductModel.description!),
                               SizedBox(
                                 height: AppSize.mainSize10,
                               ),
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  'Price',
+                                  widget.mProductModel.price!.toString(),
                                   textAlign: TextAlign.start,
                                 ),
                               ),
