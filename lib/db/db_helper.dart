@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:api_local_db/core/app_url.dart';
 import 'package:api_local_db/model/cart_model.dart';
 import 'package:api_local_db/model/cart_product_model.dart';
 import 'package:api_local_db/model/product_model.dart';
@@ -67,8 +68,7 @@ class DbHelper {
   ///Fetch Data From API and Local DB
 
   Future<List<CartModel>> fetchCart() async {
-    final response =
-        await http.get(Uri.parse('https://fakestoreapi.com/carts'));
+    final response = await http.get(Uri.parse(UrlProvider.apiCartUrl));
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       return data
