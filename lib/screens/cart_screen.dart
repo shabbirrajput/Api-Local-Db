@@ -25,7 +25,7 @@ class _CartScreenState extends State<CartScreen> {
         child: SizedBox(
             height: AppSize.mainSize45,
             child: ElevatedButton(
-                onPressed: () {}, child: const Text(AppString.textCheckout))),
+                onPressed: () {}, child: const Text(AppString.textPlaceOrder))),
       ),
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
@@ -41,6 +41,7 @@ class _CartScreenState extends State<CartScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       itemCount: snapshot.data!.length,
