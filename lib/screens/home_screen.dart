@@ -14,7 +14,7 @@ import 'package:api_local_db/screens/product_detais.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -26,7 +26,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  /*CartModel mCartModel = CartModel();*/
   List<CartModel> mCartModel = [];
 
   List<ProductModel> mProductModel = [];
@@ -37,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     initData();
-    initCartData();
     // initNewData();
     internetconnection = Connectivity()
         .onConnectivityChanged
@@ -71,6 +69,19 @@ class _HomeScreenState extends State<HomeScreen> {
     //cancel internent connection subscription after you are done
   }
 
+  Future<List<CartModel>> fetchProductsFromCart() async {
+    // Make a request to the cart API
+
+    final response = await http.get(UrlProvider.apiCartUrl as Uri);
+    if (response.statusCode == 200) {
+      final products = jsonDecode(response.body)['products'];
+      print(response.body);
+      return products;
+    } else {
+      throw Exception('Failed to fetch products from cart API');
+    }
+  }
+
   void initData() async {
     var response = await ApiProvider().getMethod(UrlProvider.apiUrl);
     mProductModel = List<ProductModel>.from(
@@ -96,44 +107,12 @@ class _HomeScreenState extends State<HomeScreen> {
     ProductModel pModel = mProductModel[index];
 
     dbHelper = DbHelper();
-    await dbHelper.saveData(pModel).then((productData) {
-      /*Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const CartScreen()));*/
-    }).catchError((error) {});
+    await dbHelper
+        .saveData(pModel)
+        .then((productData) {})
+        .catchError((error) {});
     setState(() {});
   }
-
-  ///
-  void postCart() async {
-    Response response = await post(Uri.parse(UrlProvider.apiCartUrl), body: {
-      'cartUserId': 1.toString(),
-    });
-    print(response.body);
-    setState(() {});
-  }
-
-  /// INIT new cart Data
-/*  void initCartData() async {
-    dbHelper = DbHelper();
-    await dbHelper.getCartProduct().then((cartData) {
-      if (cartData != null && cartData.cartId != null) {
-        setState(() {
-          mCartModel = cartData;
-        });
-      } else {
-        setState(() {
-          mCartModel = CartModel();
-        });
-      }
-    });
-  }*/
-  void initCartData() async {
-    dbHelper = DbHelper();
-    mProductModel = await dbHelper.getUserProduct(5);
-    setState(() {});
-  }
-
-  int selectQty = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -143,15 +122,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                /*Navigator.push(
+                Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const CartScreen(mProductModel: item,)));*/
+                        builder: (context) => const CartScreen()));
               },
               icon: const Icon(Icons.shopping_cart_outlined))
         ],
         backgroundColor: Colors.deepPurpleAccent,
-        /*elevation: 0,*/
       ),
       body: FutureBuilder<List>(
         future: dbHelper.getAllRecords(),
@@ -180,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.all(AppSize.mainSize10),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                  width: 5,
+                                  width: AppSize.mainSize5,
                                   color: Colors.black,
                                 ),
                                 borderRadius: const BorderRadius.all(
@@ -188,7 +166,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Row(
                               children: [
                                 InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProductDetails(
+                                          mProductModel: item,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   child: CachedNetworkImage(
                                     height: AppSize.mainSize100,
                                     width: AppSize.mainSize100,
@@ -228,17 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    CartScreen(
-                                                  mProductModel: item,
-                                                ),
+                                                    const CartScreen(),
                                               ),
                                             );
-
-                                            /*ModelProduct product = ModelProduct(
-                                                title: 'Product name',
-                                                price: 9.99);
-                                            await dbHelper.addProduct(product);
-                                            // show success message or navigate to cart screen*/
                                           },
                                           child: const Text(
                                               AppString.textAddToCart)),

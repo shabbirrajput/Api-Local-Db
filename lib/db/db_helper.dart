@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:api_local_db/model/cart_model.dart';
+import 'package:api_local_db/model/cart_product_model.dart';
 import 'package:api_local_db/model/product_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:http/http.dart' as http;
 import 'dart:io' as io;
 
 class DbHelper {
@@ -20,13 +24,6 @@ class DbHelper {
   static const String image = 'image';
   static const String category = 'category';
   static const String rating = 'rating';
-
-  ///Cart Table
-  static const String tableCart = 'Cart';
-  static const String cartId = 'cartId';
-  static const String cartProductID = 'cartProductID';
-  static const String cartProductQty = 'cartProductQty';
-  static const String cartUserId = 'cartUserId';
 
   Future<Database> get db async {
     _db = await initDb();
@@ -50,51 +47,14 @@ class DbHelper {
         "$description TEXT,"
         "$image TEXT"
         ")");
-
-    ///Cart Table
-/*    await db.execute("CREATE TABLE $tableCart ("
-        " $cartId INTEGER PRIMARY KEY,"
-        "$cartProductID INTEGER,"
-        "$cartProductQty INTEGER,"
-        "$cartUserId INTEGER"
-        ")");*/
   }
 
-  ///Create Product Table
+  ///Insert Into Product Table
   Future<int> saveData(ProductModel product) async {
     var dbClient = await db;
     var res = await dbClient.insert(tableProduct, product.toJson());
     return res;
   }
-
-  ///GetUSerProduct
-  Future<List<ProductModel>> getUserProduct(int userId) async {
-    var dbClient = await db;
-    var res = await dbClient.rawQuery("SELECT * FROM $tableProduct WHERE "
-        "$productId = $userId ");
-    try {
-      List<ProductModel> mProductModel = List<ProductModel>.from(
-          res.map((model) => ProductModel.fromJson(model)));
-
-      return mProductModel;
-    } catch (e) {
-      return [];
-    }
-  }
-
-  ///ToMap
-/*  Future<int> addProduct(ModelProduct product) async {
-    final dbClient = await db;
-    var res = await dbClient.insert('products', product.toMap());
-    return res;
-  }*/
-
-  ///Create Cart Table
-/*  Future<int> saveCartData(CartModel cart) async {
-    var dbClient = await db;
-    var res = await dbClient.insert(tableCart, cart.toJson());
-    return res;
-  }*/
 
   ///Get Data From Products Table
   Future<List> getAllRecords() async {
@@ -104,73 +64,64 @@ class DbHelper {
     return result.toList();
   }
 
-  ///GetCartData
-  Future<CartModel> getCartProduct(int productId) async {
-    var dbClient = await db;
-    var res = await dbClient.rawQuery("SELECT * FROM $tableProduct WHERE "
-        "$cartProductID = $productId ");
+  ///Fetch Data From API and Local DB
 
-    if (res.isNotEmpty) {
-      return CartModel.fromJson(res.first);
+  Future<List<CartModel>> fetchCart() async {
+    final response =
+        await http.get(Uri.parse('https://fakestoreapi.com/carts'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data
+          .map((json) => CartModel(
+                id: json['id'],
+                userId: json['userId'],
+                date: json['date'],
+                /*products: json['products'],*/
+              ))
+          .toList();
+    } else {
+      throw Exception('Failed to fetch products');
     }
-    return CartModel();
   }
 
-  ///Save Cart Data
-  Future<int> saveCartData(CartModel cart) async {
+  Future<List<ProductModel>> fetchProd() async {
     var dbClient = await db;
-    var res = await dbClient.insert(tableCart, cart.toJson());
-    return res;
-  }
-
-  ///Get Data From Cart Table
-/*
-  Future<CartModel> getCartProduct(int productId, int userId) async {
-    var dbClient = await db;
-    var res = await dbClient.rawQuery("SELECT * FROM $tableCart WHERE "
-        "$cartProductID = $productId AND "
-        "$cartUserId = $userId");
-
-    if (res.isNotEmpty) {
-      return CartModel.fromJson(res.first);
+    List<Map<String, dynamic>> maps =
+        await dbClient.rawQuery('''SELECT * FROM $tableProduct''');
+    List<ProductModel> product = [];
+    for (var map in maps) {
+      ProductModel prod = ProductModel(
+        id: map['id'],
+        title: map['title'],
+        price: map['price'],
+        description: map['description'],
+        image: map['image'],
+      );
+      product.add(prod);
     }
-    return CartModel();
+    return product;
   }
-*/
 
-  ///Join Query
-/*  Future<List<CartModel>> getUserCart(int userId) async {
-    var dbClient = await db;
-    var res = await dbClient.rawQuery(
-        "SELECT * FROM $tableCart INNER JOIN $tableProduct on $tableProduct.$productId=$tableCart.$cartProductID WHERE $cartUserId = $userId");
+  Future<List<CartProductModel>> getJoinedData() async {
+    List<CartModel> mCartModel = await fetchCart();
+    List<ProductModel> mProductModel = await fetchProd();
+    List<CartProductModel> mCartProdModel = [];
 
-    try {
-      List<CartModel> mCartModel =
-          List<CartModel>.from(res.map((model) => CartModel.fromJson(model)));
-
-      return mCartModel;
-    } catch (e) {
-      return [];
+    for (var apiCart in mCartModel) {
+      ProductModel? dbBook =
+          mProductModel.firstWhere((book) => book.id == apiCart.id);
+      CartProductModel book = CartProductModel(
+        id: apiCart.id!,
+        title: dbBook.title,
+        /* price: dbBook.price!,*/
+        description: dbBook.description,
+        image: dbBook.image,
+        cartUserId: apiCart.userId,
+        cartDate: apiCart.date,
+        /*products: apiCart.products,*/
+      );
+      mCartProdModel.add(book);
     }
-  }*/
-
-  Future<List> getAllCartRecords(int userId) async {
-    int userId = 5;
-    var dbClient = await db;
-    var result = await dbClient
-        .rawQuery("SELECT * FROM $tableProduct WHERE $productId=$userId");
-
-    return result.toList();
+    return mCartProdModel;
   }
-
-/*  Future<ProductModel> getCartProduct(int productId) async {
-    var dbClient = await db;
-    var res = await dbClient.rawQuery("SELECT * FROM $tableCart WHERE "
-        "$cartProductID = $productId ");
-
-*/ /*    if (res.isNotEmpty) {
-      return CartModel.fromJson(res.first);
-    }*/ /*
-    return ProductModel();
-  }*/
 }

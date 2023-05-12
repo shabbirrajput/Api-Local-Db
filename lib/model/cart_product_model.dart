@@ -1,6 +1,6 @@
 class CartProductModel {
   int? cartId;
-  String? cartUserId;
+  int? cartUserId;
   String? cartDate;
   List<CartProducts>? cartProducts;
   int? id;

@@ -2,14 +2,17 @@ class CartModel {
   int? id;
   int? userId;
   String? date;
+  int? cartProductQty;
   List<dynamic>? products;
 
-  CartModel({this.id, this.userId, this.date, this.products});
+  CartModel(
+      {this.id, this.userId, this.date, this.cartProductQty, this.products});
 
   CartModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['userId'];
     date = json['date'];
+    cartProductQty = json['cartProductQty'];
     if (json['products'] != null) {
       products = <Products>[];
       json['products'].forEach((v) {
@@ -23,6 +26,7 @@ class CartModel {
     data['id'] = id;
     data['userId'] = userId;
     data['date'] = date;
+    data['cartProductQty'] = cartProductQty;
     if (products != null) {
       data['products'] = products!.map((v) => v.toJson()).toList();
     }

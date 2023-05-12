@@ -1,6 +1,5 @@
 import 'package:api_local_db/core/app_size.dart';
 import 'package:api_local_db/core/app_string.dart';
-import 'package:api_local_db/db/com_helper.dart';
 import 'package:api_local_db/db/db_helper.dart';
 import 'package:api_local_db/model/cart_model.dart';
 import 'package:api_local_db/model/product_model.dart';
@@ -9,9 +8,7 @@ import 'package:flutter/material.dart';
 
 class ProductDetails extends StatefulWidget {
   final ProductModel mProductModel;
-  final Function onProductAddToCart;
-  const ProductDetails(
-      {Key? key, required this.mProductModel, required this.onProductAddToCart})
+  const ProductDetails({Key? key, required this.mProductModel})
       : super(key: key);
 
   @override
@@ -44,67 +41,27 @@ class _ProductDetailsState extends State<ProductDetails> {
   }
 
   int selectQty = 0;
-  int userId = 5;
-
-  addToCart() async {
-    CartModel cModel = CartModel();
-
-    cModel.id = widget.mProductModel.id;
-    cModel.userId = 5;
-
-    if (userId == 5) {
-      dbHelper = DbHelper();
-      await dbHelper.saveCartData(cModel).then((cartData) {
-        alertDialog("Successfully Added");
-      }).catchError((error) {
-        alertDialog("Error: Data Save Fail--$error");
-      });
-      initData();
-    } else {
-      alertDialog("Please Select Qty");
-    }
-    dbHelper = DbHelper();
-    await dbHelper.saveProductData(cModel).then((productData) {
-      widget.onProductAddToCart();
-    }).catchError((error) {
-      alertDialog("Error: Data Save Fail--$error");
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.deepPurple,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            /*const Text(
-                AppString.textProductDetail,
-                style: TextStyle(
-                  color: AppColor.colorWhite,
-                  fontFamily: AppFonts.avenirRegular,
-                  fontSize: AppSize.mainSize18,
-                  fontWeight: FontWeight.w900,
+        // automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CartScreen(),
                 ),
-              ),*/
-            IconButton(
-              icon: const Icon(Icons.shopping_cart_outlined),
-              onPressed: () {
-                /* Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CartScreen(mProductModel: null,),
-                  ),
-                );*/
-              },
-            ),
-          ],
-        ),
+              );
+            },
+          ),
+        ],
+        backgroundColor: Colors.deepPurple,
+
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -123,16 +80,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                 ),
               ),
               const SizedBox(
-                height: 30,
+                height: AppSize.mainSize30,
               ),
-              /*Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(AppImage.appHS1),
-                    Image.asset(AppImage.appHS2),
-                    Image.asset(AppImage.appHS3),
-                  ],
-                ),*/
               const SizedBox(
                 height: AppSize.mainSize31,
               ),
@@ -149,22 +98,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                 children: [
                   SizedBox(
                     height: AppSize.mainSize46,
-                    width: 177,
+                    width: AppSize.mainSize177,
                     child: ElevatedButton(
                         onPressed: () {
-                          /* Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CartScreen(mProductModel: null,),
-                  ),
-                );*/
-
-                          /*initData();*/
-                          /* if (mCartModel.id != null) {
-                            */ /*removeFromCart();*/ /*
-                          } else {
-                            addToCart();
-                          }*/
+                          if (mCartModel.id != null) {
+                          } else {}
                         },
                         style: ButtonStyle(
                           backgroundColor:
@@ -172,36 +110,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                             (Set<MaterialState> states) => Colors.deepPurple,
                           ),
                         ),
-                        child: const Text('Add To Cart')
-
-                        /*Text(
-                          mCartModel.cartId != null
-                              ? 'Remove From Cart'
-                              : AppString.textAddToCart,
-                          style: const TextStyle(
-                            color: AppColor.colorWhite_two,
-                            fontFamily: AppFonts.avenirRegular,
-                          ),
-                        ),*/
-                        ),
+                        child: const Text(AppString.textAddToCart)),
                   ),
                 ],
               ),
               const SizedBox(
                 height: AppSize.mainSize15,
               ),
-              /*const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    AppString.textHSPrice,
-                    style: TextStyle(
-                      color: AppColor.colorPrimary_two,
-                      fontSize: AppSize.mainSize24,
-                      fontFamily: AppFonts.avenirRegular,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),*/
               const SizedBox(
                 height: AppSize.mainSize28,
               ),
@@ -225,11 +140,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                     Row(
                       children: [
                         Container(
-                          height: 40,
-                          width: 110,
+                          height: AppSize.mainSize40,
+                          width: AppSize.mainSize110,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius:
+                                BorderRadius.circular(AppSize.mainSize5),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -245,28 +161,22 @@ class _ProductDetailsState extends State<ProductDetails> {
                               if (selectQty != 0)
                                 const VerticalDivider(
                                   color: Colors.grey,
-                                  thickness: 1,
+                                  thickness: AppSize.mainSize1,
                                 ),
                               Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 3),
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: AppSize.mainSize3),
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 3, vertical: 2),
+                                    horizontal: AppSize.mainSize3,
+                                    vertical: AppSize.mainSize2),
                                 decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(3),
+                                    borderRadius: BorderRadius.circular(
+                                        AppSize.mainSize3),
                                     color: Colors.white),
                                 child: Text(
                                   selectQty.toString(),
                                 ),
                               ),
-                              /* if (selectQty !=
-                                    widget.mProductModel.!)
-                                  const VerticalDivider(
-                                    color: AppColor.colorCoolGrey,
-                                    thickness: 1,
-                                  ),
-                                if (selectQty !=
-                                    widget.mProductModel.productQty!)*/
                               InkWell(
                                   onTap: () {
                                     setState(() {
@@ -287,21 +197,6 @@ class _ProductDetailsState extends State<ProductDetails> {
                     ),
                   ],
                 ),
-              /* const SizedBox(
-                  height: AppSize.mainSize31,
-                ),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    AppString.textProductDetail,
-                    style: TextStyle(
-                      color: AppColor.colorBlack_two,
-                      fontSize: AppSize.mainSize16,
-                      fontFamily: AppFonts.avenirRegular,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),*/
               const SizedBox(
                 height: AppSize.mainSize5,
               ),
