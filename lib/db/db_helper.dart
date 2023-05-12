@@ -49,7 +49,7 @@ class DbHelper {
         ")");
   }
 
-  ///Insert Into Product Table
+  ///Insert Data Into Product Table
   Future<int> saveData(ProductModel product) async {
     var dbClient = await db;
     var res = await dbClient.insert(tableProduct, product.toJson());
