@@ -3,6 +3,7 @@ import 'package:api_local_db/core/app_string.dart';
 import 'package:api_local_db/db/db_helper.dart';
 import 'package:api_local_db/model/cart_model.dart';
 import 'package:api_local_db/model/cart_product_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CartScreen extends StatefulWidget {
@@ -63,8 +64,11 @@ class _CartScreenState extends State<CartScreen> {
                                   SizedBox(
                                     height: AppSize.mainSize70,
                                     width: AppSize.mainSize70,
-                                    child: Image.network(
-                                      "${snapshot.data![index].image}",
+                                    child: CachedNetworkImage(
+                                      height: 200,
+                                      width: 200,
+                                      imageUrl:
+                                          "${snapshot.data![index].image}",
                                     ),
                                   ),
                                   const SizedBox(
@@ -72,6 +76,8 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                                   Expanded(
                                     child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const SizedBox(
                                           height: AppSize.mainSize10,
@@ -93,15 +99,13 @@ class _CartScreenState extends State<CartScreen> {
                                         Text(
                                             "Date : ${snapshot.data![index].cartDate}"),
                                         const SizedBox(
-                                          height: AppSize.mainSize20,
+                                          height: AppSize.mainSize10,
                                         ),
-                                        Row(
-                                          children: const [
-                                            SizedBox(
-                                              width: AppSize.mainSize20,
-                                            ),
-                                          ],
-                                        )
+                                        Text(
+                                            "Price : ${snapshot.data![index].price.toString()}"),
+                                        const SizedBox(
+                                          height: AppSize.mainSize10,
+                                        ),
                                       ],
                                     ),
                                   )
