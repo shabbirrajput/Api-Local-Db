@@ -100,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } on SocketException catch (_) {
       print('not connected');
     }
+
     setState(() {});
   }
 
